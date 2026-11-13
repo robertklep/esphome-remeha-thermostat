@@ -55,7 +55,7 @@ ble_client:
   - mac_address: ${ble_mac}
     id: confida_client
 
-# Remeha Confida configuration
+## Remeha Confida configuration
 remeha_confida:
   id: confida
   ble_client_id: confida_client
@@ -103,6 +103,18 @@ number:
     unit_of_measurement: "°C"
     device_class: temperature
     icon: mdi:home-thermometer
+  - platform: remeha_confida
+    id: active_schedule_id
+    name: "Active Schedule (CP570)"
+    internal: true
+    index: 0x3458
+    subindex: 1
+    value_type: enum
+    node: 1
+    min_value: 1
+    max_value: 3
+    entity_category: config
+    icon: mdi:thermostat-cog
 
 binary_sensor:
   - platform: remeha_confida
@@ -112,10 +124,13 @@ binary_sensor:
     subindex: 0
     icon: mdi:radiator
 
-# Thermostat configuration
+## Remeha Thermostat configuration
+
+# Hub configuration (refers to the `remeha_confida` component above)
 remeha_thermostat:
   remeha_client: confida
 
+# This creates the actual thermostat
 climate:
   - platform: remeha_thermostat
     name: 'Remeha Thermostat'
@@ -123,3 +138,14 @@ climate:
     current_temperature: current_temperature_id
     target_temperature: target_temperature_id
     heat_demand: heat_demand_id
+
+# Optional: selector for schedules
+select:
+  - platform: remeha_thermostat
+    name: 'Active Schedule'
+    datapoint: active_schedule_id
+    type: schedule
+    labels:
+      - Tijdprogramma 1
+      - Tijdprogramma 2
+      - Tijdprogramma 3
