@@ -9,7 +9,7 @@ DEPENDENCIES = [ "remeha_thermostat" ]
 # config keys
 CONF_CURRENT_TEMPERATURE_ID = "current_temperature"
 CONF_TARGET_TEMPERATURE_ID  = "target_temperature"
-CONF_HEAT_DEMAND_ID         = "heat_demand"
+CONF_HEATING_STATE_ID       = "heating_state"
 
 RemehaThermostatClimate = remeha_thermostat_ns.class_(
     "RemehaThermostatClimate",
@@ -23,7 +23,7 @@ CONFIG_SCHEMA = climate.climate_schema(RemehaThermostatClimate).extend({
     cv.GenerateID(CONF_REMEHA_THERMOSTAT_ID): cv.use_id(RemehaThermostat),
     cv.Required(CONF_CURRENT_TEMPERATURE_ID): cv.use_id(sensor.Sensor),
     cv.Required(CONF_TARGET_TEMPERATURE_ID):  cv.use_id(number.Number),
-    cv.Optional(CONF_HEAT_DEMAND_ID):         cv.use_id(binary_sensor.BinarySensor),
+    cv.Optional(CONF_HEATING_STATE_ID):         cv.use_id(binary_sensor.BinarySensor),
 })
 
 async def to_code(config):
@@ -32,5 +32,5 @@ async def to_code(config):
     await cg.register_parented(var, config[CONF_REMEHA_THERMOSTAT_ID])
     cg.add(var.set_current_temperature(await cg.get_variable(config[CONF_CURRENT_TEMPERATURE_ID])))
     cg.add(var.set_target_temperature(await cg.get_variable(config[CONF_TARGET_TEMPERATURE_ID])))
-    if CONF_HEAT_DEMAND_ID in config:
-        cg.add(var.set_heat_demand(await cg.get_variable(config[CONF_HEAT_DEMAND_ID])))
+    if CONF_HEATING_STATE_ID in config:
+        cg.add(var.set_heating_state(await cg.get_variable(config[CONF_HEATING_STATE_ID])))

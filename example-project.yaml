@@ -78,7 +78,9 @@ sensor:
     name: "Room temperature high resolution (CM260)"
     id: current_temperature_id
     index: 0x5434
-    # Your Remeha setup may require a different subindex.
+    # Your Remeha setup may require a different subindex:
+    # the subindex refers to the heating zone that's configured in your
+    # system, which is typically just a single zone at index 1.
     subindex: 1
     value_type: i16
     gain: 0.01
@@ -88,8 +90,19 @@ sensor:
     accuracy_decimals: 2
     icon: mdi:home-thermometer
     read: single
+  - platform: remeha_confida
+    id: device_status
+    internal: true
+    name: "Device status (AM012)"
+    index: 0x500f
+    subindex: 0
+    node: 1
+    value_type: u8
+    accuracy_decimals: 0
+    icon: mdi:home-thermometer
 
 number:
+  # This (writable) number is used to read/write the current room setpoint.
   - platform: remeha_confida
     name: "Temporary room setpoint (CP510)"
     id: target_temperature_id
@@ -103,6 +116,9 @@ number:
     unit_of_measurement: "°C"
     device_class: temperature
     icon: mdi:home-thermometer
+  # Optional: this reads/writes the currently active heating schedule.
+  # If you're not interested in this, remove it, and also remove the
+  # `select` configuration below that refers to it.
   - platform: remeha_confida
     id: active_schedule_id
     name: "Active Schedule (CP570)"
@@ -116,18 +132,31 @@ number:
     entity_category: config
     icon: mdi:thermostat-cog
 
+# This binary sensor is optional and serves to show if the system is actively
+# heating. If not, the thermostat mode is set to "idle" (which is not
+# necessarily correct, as the heater could also be active for DHW, but
+# ESPHome doesn't support this state).
+# If you're not interested in it, remove it, and also the `heating_state`
+# configuration below that refers to it.
 binary_sensor:
-  - platform: remeha_confida
-    id: heat_demand_id
-    name: "Heat demand? (AM021)"
-    index: 0x5018
-    subindex: 0
+  - platform: template
+    id: heating_state_id
+    name: 'Is heating active?'
+    internal: true
+    lambda: |-
+      auto state = id(device_status).state;
+      if (std::isnan(state)) {
+        return {};
+      }
+      // State 3 = Central Heating is active
+      return state == 3;
     icon: mdi:radiator
 
 ## Remeha Thermostat configuration
 
-# Hub configuration (refers to the `remeha_confida` component above)
+# Hub configuration
 remeha_thermostat:
+  # refers to the `remeha_confida` component above
   remeha_client: confida
 
 # This creates the actual thermostat
@@ -137,7 +166,7 @@ climate:
     # These refer to the components configured above.
     current_temperature: current_temperature_id
     target_temperature: target_temperature_id
-    heat_demand: heat_demand_id
+    heating_state: heating_state_id
 
 # Optional: selector for schedules
 select:

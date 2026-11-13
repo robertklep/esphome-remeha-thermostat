@@ -8,7 +8,7 @@ climate::ClimateTraits RemehaThermostatClimate::traits() {
   // TODO: find out if device supports cooling
   traits.set_supported_modes({ climate::CLIMATE_MODE_HEAT });
   traits.add_feature_flags(climate::CLIMATE_SUPPORTS_CURRENT_TEMPERATURE);
-  if (this->heat_demand_ != nullptr) {
+  if (this->heating_state_ != nullptr) {
     traits.add_feature_flags(climate::CLIMATE_SUPPORTS_ACTION);
   }
   // TODO: retrieve these from the device somehow?
@@ -44,8 +44,8 @@ void RemehaThermostatClimate::on_update_target_(float value) {
   this->publish_state();
 }
 
-void RemehaThermostatClimate::on_update_heat_demand_(bool value) {
-  ESP_LOGI(TAG, "Heat demand got updated to %s", value ? "ON" : "OFF");
+void RemehaThermostatClimate::on_update_heating_state_(bool value) {
+  ESP_LOGI(TAG, "Heating state got updated to %s", value ? "ON" : "OFF");
   this->action = value ? climate::CLIMATE_ACTION_HEATING : climate::CLIMATE_ACTION_IDLE;
   this->publish_state();
 }

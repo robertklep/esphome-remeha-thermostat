@@ -14,7 +14,7 @@ Other than this BLE add-on for your Remeha device, the only other requirement is
 
 Setup consists of two parts:
 * Setting up the Confida component so it can communicate with your Remeha device over BLE. See [the documentation](https://github.com/robertklep/esphome-remeha-confida#remeha-confida-uitlezen-met-een-esp32-esphome).
-* The thermostat component requires two sensors to be configured (current and target temperature), and one optional sensor (if there's currently a demand for heat or not).
+* The thermostat component requires two sensors to be configured (current and target temperature), and one optional sensor (if the system is currently heating, or idle)
 
 You can use the example YAML files from the Confida component for initial setup, then add the thermostat component and configuration to it once the communication between the ESP32 and the Remeha device are working. NOTE: the example configurations don't configure the "Temporary room setpoint" `number` and "Heat demand" `binary_sensor`. You will need to make sure to add those to the existing configuration. See the included YAML example for their setup.
 

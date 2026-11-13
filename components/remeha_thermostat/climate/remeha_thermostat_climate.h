@@ -16,12 +16,14 @@ public:
     this->current_->add_on_state_callback([this](float value) {
       this->on_update_current_(value);
     });
+
     this->target_->add_on_state_callback([this](float value) {
       this->on_update_target_(value);
     });
-    if (this->heat_demand_ != nullptr) {
-      this->heat_demand_->add_on_state_callback([this](bool value) {
-        this->on_update_heat_demand_(value);
+
+    if (this->heating_state_ != nullptr) {
+      this->heating_state_->add_on_state_callback([this](bool value) {
+        this->on_update_heating_state_(value);
       });
     }
     // hard-coded to always heating
@@ -36,8 +38,8 @@ public:
     this->target_ = target;
   }
 
-  void set_heat_demand(binary_sensor::BinarySensor* heat_demand) {
-    this->heat_demand_ = heat_demand;
+  void set_heating_state(binary_sensor::BinarySensor* state) {
+    this->heating_state_ = state;
   }
 
 protected:
@@ -45,11 +47,11 @@ protected:
   void control(const climate::ClimateCall &call) override;
   void on_update_current_(float);
   void on_update_target_(float);
-  void on_update_heat_demand_(bool);
+  void on_update_heating_state_(bool);
 
   number::Number *target_{nullptr};
   sensor::Sensor *current_{nullptr};
-  binary_sensor::BinarySensor *heat_demand_{nullptr};
+  binary_sensor::BinarySensor *heating_state_{nullptr};
 };
 
 } // esphome::remeha_thermostat
