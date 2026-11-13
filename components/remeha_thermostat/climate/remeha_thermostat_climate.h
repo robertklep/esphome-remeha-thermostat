@@ -14,14 +14,14 @@ class RemehaThermostatClimate : public climate::Climate, public Component, publi
 public:
   void setup() {
     this->current_->add_on_state_callback([this](float value) {
-      this->update_current_(value);
+      this->on_update_current_(value);
     });
     this->target_->add_on_state_callback([this](float value) {
-      this->update_target_(value);
+      this->on_update_target_(value);
     });
     if (this->heat_demand_ != nullptr) {
       this->heat_demand_->add_on_state_callback([this](bool value) {
-        this->update_heat_demand_(value);
+        this->on_update_heat_demand_(value);
       });
     }
     // hard-coded to always heating
@@ -43,9 +43,9 @@ public:
 protected:
   climate::ClimateTraits traits() override;
   void control(const climate::ClimateCall &call) override;
-  void update_current_(float);
-  void update_target_(float);
-  void update_heat_demand_(bool);
+  void on_update_current_(float);
+  void on_update_target_(float);
+  void on_update_heat_demand_(bool);
 
   number::Number *target_{nullptr};
   sensor::Sensor *current_{nullptr};

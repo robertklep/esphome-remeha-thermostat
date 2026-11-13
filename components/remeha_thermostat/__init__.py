@@ -15,6 +15,7 @@ RemehaThermostat     = remeha_thermostat_ns.class_("RemehaThermostat", cg.Compon
 # config keys
 CONF_REMEHA_CLIENT_ID = "remeha_client"
 CONF_REMEHA_THERMOSTAT_ID = "remeha_thermostat_id"
+CONF_DATAPOINT = "datapoint"
 
 # configuration schema
 CONFIG_SCHEMA = cv.Schema({
