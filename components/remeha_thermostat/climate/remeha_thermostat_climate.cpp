@@ -24,7 +24,7 @@ void RemehaThermostatClimate::control(const climate::ClimateCall &call) {
     auto value = *call.get_target_temperature();
     ESP_LOGI(TAG, "Target temperature got set to %.2f°C", value);
     this->target_temperature = value;
-    this->target_->make_call().set_value(value).perform();
+    this->target_setter_->make_call().set_value(value).perform();
     updated = true;
   }
   if (updated) {

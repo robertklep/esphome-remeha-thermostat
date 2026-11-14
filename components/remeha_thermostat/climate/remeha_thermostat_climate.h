@@ -17,7 +17,7 @@ public:
       this->on_update_current_(value);
     });
 
-    this->target_->add_on_state_callback([this](float value) {
+    this->target_getter_->add_on_state_callback([this](float value) {
       this->on_update_target_(value);
     });
 
@@ -34,8 +34,12 @@ public:
     this->current_ = current;
   }
 
-  void set_target_temperature(number::Number* target) {
-    this->target_ = target;
+  void set_target_temperature_getter(sensor::Sensor* getter) {
+    this->target_getter_ = getter;
+  }
+
+  void set_target_temperature_setter(number::Number* setter) {
+    this->target_setter_ = setter;
   }
 
   void set_heating_state(binary_sensor::BinarySensor* state) {
@@ -49,8 +53,9 @@ protected:
   void on_update_target_(float);
   void on_update_heating_state_(bool);
 
-  number::Number *target_{nullptr};
   sensor::Sensor *current_{nullptr};
+  sensor::Sensor *target_getter_{nullptr};
+  number::Number *target_setter_{nullptr};
   binary_sensor::BinarySensor *heating_state_{nullptr};
 };
 
