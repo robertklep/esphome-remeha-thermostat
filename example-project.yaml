@@ -100,12 +100,25 @@ sensor:
     value_type: u8
     accuracy_decimals: 0
     icon: mdi:home-thermometer
+  - platform: remeha_confida
+    id: get_target_temperature_id
+    name: "Requested current room temperature setpoint (CM190)"
+    index: 0x5419
+    subindex: 1
+    value_type: i16
+    gain: 0.1
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state_class: measurement
+    accuracy_decimals: 1
+    entity_category: diagnostic
+    icon: mdi:home-thermometer
 
 number:
   # This (writable) number is used to read/write the current room setpoint.
   - platform: remeha_confida
     name: "Temporary room setpoint (CP510)"
-    id: target_temperature_id
+    id: set_target_temperature_id
     index: 0x3451
     subindex: 1
     value_type: u16
@@ -163,9 +176,33 @@ remeha_thermostat:
 climate:
   - platform: remeha_thermostat
     name: 'Remeha Thermostat'
-    # These refer to the components configured above.
+
+    ## Following below are the sensors/numbers that are used by the
+    ## thermostat component to get the current temperature, set a
+    ## target temperature, and (optionally) reflect the current heating
+    ## status of the system.
+    ##
+    ## The values are ID's that refer to configured sensors/numbers above.
+
     current_temperature: current_temperature_id
-    target_temperature: target_temperature_id
+
+    # The datapoint used to set the target temperature (0x3451) does
+    # not always contain the currently set setpoint.
+    # That's why we split up the target temperature configuration
+    # between 2 datapoints:
+    # - a sensor that reads the current setpoint,
+    # - and a number that sets it.
+    #
+    # If 0x3451 works well for you, you can replace this configuration
+    # by a single line:
+    #
+    # target_temperature: set_target_temperature_id
+
+    target_temperature:
+      get: get_target_temperature_id
+      set: set_target_temperature_id
+
+    # Optional
     heating_state: heating_state_id
 
 # Optional: selector for schedules
